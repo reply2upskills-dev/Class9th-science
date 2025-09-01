@@ -1,0 +1,548 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tissues Quiz Game</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --correct: #10b981;
+            --incorrect: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-darker: #1e293b;
+            --bg-light: #334155;
+            --text: #f8fafc;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-center;
+            padding: 1rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            background-color: var(--bg-darker);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin: 2rem 1rem;
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .topic-card {
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            border-color: #2563eb;
+        }
+
+        .option-btn {
+            background-color: var(--bg-light);
+            color: var(--text);
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 0.3rem 0;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-btn:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct);
+            border-color: var(--correct);
+            color: white;
+            animation: pulse 0.5s ease-out;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect);
+            border-color: var(--incorrect);
+            color: white;
+            animation: shake 0.5s ease-out;
+        }
+
+        .option-btn.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-3px); }
+            40%, 80% { transform: translateX(3px); }
+        }
+
+        .quiz-section {
+            background-color: var(--bg-light);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #475569;
+        }
+
+        .score-display {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            animation: scorePulse 0.5s ease-out;
+        }
+
+        @keyframes scorePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .explanation {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            background-color: rgba(59, 130, 246, 0.1);
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .next-btn {
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+            animation: bounce 1.5s infinite;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .result-screen {
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .result-icon {
+            font-size: 3.5rem;
+            margin: 1rem 0;
+            color: var(--correct);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem 0.5rem;
+            }
+
+            .option-btn {
+                padding: 0.7rem 1rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center">
+    <!-- Game Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">🧬 Tissues Quiz Game</h1>
+            <p class="text-lg text-gray-300">Test your knowledge of plant and animal tissues!</p>
+        </header>
+
+        <!-- Main Game Area -->
+        <div id="quiz-area" class="w-full">
+            <!-- Topic Selection Screen -->
+            <div id="topic-selector" class="text-center">
+                <h2 class="text-2xl font-bold text-white mb-6">Select a Topic</h2>
+                <div id="topic-buttons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="quiz-screen" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="topic-title" class="text-xl font-semibold text-white"></h2>
+                    <div class="bg-blue-600 text-white px-4 py-2 rounded-full font-bold score-display">
+                        Score: <span id="score">0</span>
+                    </div>
+                </div>
+
+                <div class="quiz-section mb-6">
+                    <div class="flex items-center mb-4">
+                        <span id="question-number" class="text-xl font-bold text-blue-400 mr-2"></span>
+                        <h3 id="question-text" class="text-xl font-semibold text-white"></h3>
+                    </div>
+
+                    <div id="options-container" class="grid grid-cols-1 gap-3"></div>
+                </div>
+
+                <div id="explanation-section" class="hidden explanation p-4">
+                    <h4 class="font-bold text-blue-300 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i> Explanation:
+                    </h4>
+                    <p id="explanation-text" class="text-gray-200"></p>
+                </div>
+
+                <button id="next-button" class="next-btn hidden">
+                    Next Question <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="results-screen" class="hidden result-screen">
+                <div class="result-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-4">Quiz Complete!</h2>
+                <p class="text-xl text-gray-200 mb-6">
+                    Your score: <span id="final-score" class="font-bold text-blue-400"></span>
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button id="restart-button" class="py-2 px-5 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition">
+                        <i class="fas fa-redo mr-2"></i> Restart Quiz
+                    </button>
+                    <button id="new-topic-button" class="py-2 px-5 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition">
+                        <i class="fas fa-book mr-2"></i> Choose New Topic
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Quiz Data: 5 topics, 20 questions each
+        const quizData = {
+            "Plant Tissues": [
+                { question: "Which tissue is responsible for plant growth?", options: ["Parenchyma", "Meristematic", "Sclerenchyma", "Collenchyma"], answer: "Meristematic", explanation: "Meristematic tissue is responsible for growth as it contains actively dividing cells." },
+                { question: "What is the function of xylem?", options: ["Transport food", "Transport water", "Store food", "Provide support"], answer: "Transport water", explanation: "Xylem transports water and minerals from roots to other parts of the plant." },
+                { question: "Which tissue provides mechanical support?", options: ["Parenchyma", "Collenchyma", "Sclerenchyma", "Epidermis"], answer: "Sclerenchyma", explanation: "Sclerenchyma has thick, lignified walls that provide mechanical support." },
+                { question: "Where is apical meristem found?", options: ["Root tips", "Leaf surface", "Stem bark", "Flower petals"], answer: "Root tips", explanation: "Apical meristem is located at the tips of roots and shoots, enabling primary growth." },
+                { question: "What is the role of phloem?", options: ["Transport water", "Transport food", "Store water", "Protect plant"], answer: "Transport food", explanation: "Phloem transports sugars and nutrients produced during photosynthesis." },
+                { question: "Which tissue is alive at maturity?", options: ["Sclerenchyma", "Collenchyma", "Xylem vessels", "Tracheids"], answer: "Collenchyma", explanation: "Collenchyma remains alive at maturity and provides flexible support." },
+                { question: "What is the primary function of parenchyma?", options: ["Support", "Storage", "Transport", "Protection"], answer: "Storage", explanation: "Parenchyma stores food, water, and nutrients in plants." },
+                { question: "Which tissue forms the plant's outer layer?", options: ["Cortex", "Epidermis", "Pericycle", "Endodermis"], answer: "Epidermis", explanation: "Epidermis is the outermost layer that protects the plant." },
+                { question: "What is cork made of?", options: ["Parenchyma", "Collenchyma", "Sclerenchyma", "Phellem"], answer: "Phellem", explanation: "Cork (phellem) is produced by the cork cambium and protects the plant." },
+                { question: "Which tissue is dead at maturity?", options: ["Parenchyma", "Collenchyma", "Sclerenchyma", "Meristem"], answer: "Sclerenchyma", explanation: "Sclerenchyma cells are dead at maturity and provide rigid support." },
+                { question: "What is the function of stomata?", options: ["Absorb water", "Exchange gases", "Transport food", "Store food"], answer: "Exchange gases", explanation: "Stomata regulate gas exchange and transpiration." },
+                { question: "Which tissue is found in the vascular bundle?", options: ["Epidermis", "Xylem and Phloem", "Cortex", "Pith"], answer: "Xylem and Phloem", explanation: "Vascular bundles contain xylem (water transport) and phloem (food transport)." },
+                { question: "What is the role of companion cells in phloem?", options: ["Transport water", "Support sieve tubes", "Store food", "Protect plant"], answer: "Support sieve tubes", explanation: "Companion cells assist sieve tubes in transporting food." },
+                { question: "Which tissue is responsible for secondary growth?", options: ["Apical meristem", "Lateral meristem", "Intercalary meristem", "Protoderm"], answer: "Lateral meristem", explanation: "Lateral meristem (cambium) increases the girth of stems and roots." },
+                { question: "What is the function of aerenchyma?", options: ["Support", "Buoyancy", "Storage", "Transport"], answer: "Buoyancy", explanation: "Aerenchyma has air spaces that help aquatic plants float." },
+                { question: "Which tissue is found in the leaf veins?", options: ["Epidermis", "Mesophyll", "Vascular tissue", "Collenchyma"], answer: "Vascular tissue", explanation: "Leaf veins contain xylem and phloem for transport." },
+                { question: "What is the role of the endodermis?", options: ["Store food", "Regulate water", "Protect plant", "Transport food"], answer: "Regulate water", explanation: "The endodermis controls water and nutrient movement into the vascular cylinder." },
+                { question: "Which tissue is involved in photosynthesis?", options: ["Epidermis", "Mesophyll", "Pericycle", "Cortex"], answer: "Mesophyll", explanation: "Mesophyll cells contain chloroplasts for photosynthesis." },
+                { question: "What is the function of the pericycle?", options: ["Store food", "Produce lateral roots", "Transport water", "Protect plant"], answer: "Produce lateral roots", explanation: "The pericycle gives rise to lateral roots and secondary growth." },
+                { question: "Which tissue is found in the stem cortex?", options: ["Xylem", "Phloem", "Parenchyma", "Sclerenchyma"], answer: "Parenchyma", explanation: "The cortex primarily consists of parenchyma for storage." },
+                { question: "What is the role of the casparian strip?", options: ["Store food", "Block water", "Transport nutrients", "Support plant"], answer: "Block water", explanation: "The casparian strip prevents water from leaking out of the vascular cylinder." },
+                { question: "Which tissue is found in the fruit pulp?", options: ["Collenchyma", "Sclerenchyma", "Parenchyma", "Epidermis"], answer: "Parenchyma", explanation: "Fruit pulp is mostly parenchyma for storage." },
+                { question: "What is the function of trichomes?", options: ["Absorb water", "Protect plant", "Transport food", "Store food"], answer: "Protect plant", explanation: "Trichomes reduce water loss and deter herbivores." },
+                { question: "Which tissue is involved in wound healing?", options: ["Meristem", "Parenchyma", "Collenchyma", "Cork cambium"], answer: "Cork cambium", explanation: "Cork cambium produces cork cells to heal wounds." },
+                { question: "What is the role of the pith?", options: ["Support", "Storage", "Transport", "Protection"], answer: "Storage", explanation: "The pith stores nutrients and water in stems." },
+                { question: "Which tissue is found in the root cap?", options: ["Epidermis", "Parenchyma", "Meristem", "Collenchyma"], answer: "Parenchyma", explanation: "The root cap consists of parenchyma to protect the root tip." },
+                { question: "What is the function of the vascular cambium?", options: ["Primary growth", "Secondary growth", "Gas exchange", "Food storage"], answer: "Secondary growth", explanation: "Vascular cambium produces secondary xylem and phloem." },
+                { question: "Which tissue is found in the bark?", options: ["Epidermis", "Cork", "Cortex", "Pith"], answer: "Cork", explanation: "Bark includes cork (phellem) produced by the cork cambium." }
+            ],
+            "Animal Tissues: Epithelial": [
+                { question: "What is the function of epithelial tissue?", options: ["Support", "Protection", "Movement", "Transport"], answer: "Protection", explanation: "Epithelial tissue covers surfaces and protects underlying tissues." },
+                { question: "Which epithelium lines the mouth?", options: ["Simple squamous", "Stratified squamous", "Cuboidal", "Columnar"], answer: "Stratified squamous", explanation: "Stratified squamous epithelium protects areas subject to abrasion." },
+                { question: "What is the role of simple squamous epithelium?", options: ["Secretion", "Absorption", "Protection", "Diffusion"], answer: "Diffusion", explanation: "Simple squamous epithelium allows for rapid diffusion (e.g., alveoli)." },
+                { question: "Which epithelium is found in the kidney tubules?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Cuboidal", explanation: "Cuboidal epithelium in kidney tubules aids in secretion and absorption." },
+                { question: "What is the function of ciliated epithelium?", options: ["Absorption", "Movement", "Protection", "Secretion"], answer: "Movement", explanation: "Cilia move mucus and particles in the respiratory tract." },
+                { question: "Which epithelium is found in the intestines?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Columnar", explanation: "Columnar epithelium in the intestines aids in absorption." },
+                { question: "What is the role of glandular epithelium?", options: ["Support", "Secretion", "Transport", "Protection"], answer: "Secretion", explanation: "Glandular epithelium produces and secretes substances like hormones." },
+                { question: "Which epithelium is found in the skin?", options: ["Simple squamous", "Stratified squamous", "Cuboidal", "Columnar"], answer: "Stratified squamous", explanation: "Stratified squamous epithelium protects the skin from damage." },
+                { question: "What is the function of microvilli?", options: ["Secretion", "Absorption", "Protection", "Movement"], answer: "Absorption", explanation: "Microvilli increase surface area for absorption in the intestines." },
+                { question: "Which epithelium lines blood vessels?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Squamous", explanation: "Simple squamous epithelium allows for gas exchange in blood vessels." },
+                { question: "What is the role of transitional epithelium?", options: ["Stretching", "Secretion", "Absorption", "Protection"], answer: "Stretching", explanation: "Transitional epithelium stretches to accommodate urine in the bladder." },
+                { question: "Which epithelium is found in the stomach?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Columnar", explanation: "Columnar epithelium in the stomach secretes mucus and digestive enzymes." },
+                { question: "What is the function of keratinized epithelium?", options: ["Absorption", "Protection", "Secretion", "Movement"], answer: "Protection", explanation: "Keratinized epithelium (e.g., skin) prevents water loss and infection." },
+                { question: "Which epithelium is found in the alveoli?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Squamous", explanation: "Simple squamous epithelium in alveoli facilitates gas exchange." },
+                { question: "What is the role of pseudostratified epithelium?", options: ["Secretion", "Absorption", "Protection", "Movement"], answer: "Secretion", explanation: "Pseudostratified epithelium in the trachea secretes mucus and moves particles." },
+                { question: "Which epithelium is found in the urinary bladder?", options: ["Squamous", "Cuboidal", "Transitional", "Columnar"], answer: "Transitional", explanation: "Transitional epithelium allows the bladder to stretch and fill." },
+                { question: "What is the function of tight junctions?", options: ["Support", "Prevent leakage", "Secretion", "Absorption"], answer: "Prevent leakage", explanation: "Tight junctions seal cells together to prevent fluid leakage." },
+                { question: "Which epithelium is found in the esophagus?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Stratified squamous", explanation: "Stratified squamous epithelium protects the esophagus from abrasion." },
+                { question: "What is the role of goblet cells?", options: ["Absorption", "Secretion", "Protection", "Movement"], answer: "Secretion", explanation: "Goblet cells secrete mucus to lubricate and protect surfaces." },
+                { question: "Which epithelium is found in the small intestine?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Columnar", explanation: "Columnar epithelium in the small intestine aids in nutrient absorption." },
+                { question: "What is the function of desmosomes?", options: ["Support", "Adhesion", "Secretion", "Absorption"], answer: "Adhesion", explanation: "Desmosomes hold epithelial cells together to resist mechanical stress." },
+                { question: "Which epithelium is found in the nasal passages?", options: ["Squamous", "Cuboidal", "Columnar", "Pseudostratified"], answer: "Pseudostratified", explanation: "Pseudostratified ciliated columnar epithelium lines the nasal passages." },
+                { question: "What is the role of basement membrane?", options: ["Support", "Anchorage", "Secretion", "Absorption"], answer: "Anchorage", explanation: "The basement membrane anchors epithelium to underlying connective tissue." },
+                { question: "Which epithelium is found in the gallbladder?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Columnar", explanation: "Columnar epithelium in the gallbladder aids in bile concentration." },
+                { question: "What is the function of gap junctions?", options: ["Support", "Communication", "Secretion", "Absorption"], answer: "Communication", explanation: "Gap junctions allow direct communication between cells." },
+                { question: "Which epithelium is found in the pancreas?", options: ["Squamous", "Cuboidal", "Columnar", "Stratified"], answer: "Cuboidal", explanation: "Cuboidal epithelium in the pancreas forms secretory acini." },
+                { question: "What is the role of apical surface?", options: ["Secretion", "Absorption", "Protection", "Movement"], answer: "Absorption", explanation: "The apical surface faces the lumen and is specialized for absorption or secretion." }
+            ],
+            "Animal Tissues: Connective": [
+                { question: "What is the function of connective tissue?", options: ["Support", "Protection", "Movement", "Transport"], answer: "Support", explanation: "Connective tissue supports and binds other tissues and organs." },
+                { question: "Which connective tissue is liquid?", options: ["Bone", "Cartilage", "Blood", "Adipose"], answer: "Blood", explanation: "Blood is a fluid connective tissue that transports nutrients and gases." },
+                { question: "What is the role of fibroblasts?", options: ["Secretion", "Support", "Protection", "Movement"], answer: "Secretion", explanation: "Fibroblasts produce fibers and ground substance in connective tissue." },
+                { question: "Which connective tissue stores fat?", options: ["Bone", "Cartilage", "Adipose", "Blood"], answer: "Adipose", explanation: "Adipose tissue stores fat and provides insulation." },
+                { question: "What is the function of collagen fibers?", options: ["Support", "Flexibility", "Strength", "Protection"], answer: "Strength", explanation: "Collagen fibers provide tensile strength to connective tissue." },
+                { question: "Which connective tissue is found in tendons?", options: ["Areolar", "Dense regular", "Adipose", "Reticular"], answer: "Dense regular", explanation: "Dense regular connective tissue forms tendons and ligaments." },
+                { question: "What is the role of elastic fibers?", options: ["Support", "Flexibility", "Strength", "Protection"], answer: "Flexibility", explanation: "Elastic fibers allow tissues to stretch and recoil." },
+                { question: "Which connective tissue is found in the ear?", options: ["Bone", "Cartilage", "Adipose", "Blood"], answer: "Cartilage", explanation: "Elastic cartilage in the ear provides flexibility." },
+                { question: "What is the function of macrophages?", options: ["Secretion", "Defense", "Support", "Movement"], answer: "Defense", explanation: "Macrophages phagocytose pathogens and debris." },
+                { question: "Which connective tissue is found in the lymph nodes?", options: ["Areolar", "Reticular", "Adipose", "Dense irregular"], answer: "Reticular", explanation: "Reticular connective tissue forms the stroma of lymph nodes." },
+                { question: "What is the role of mast cells?", options: ["Secretion", "Defense", "Support", "Movement"], answer: "Defense", explanation: "Mast cells release histamine during allergic reactions." },
+                { question: "Which connective tissue is found in the dermis?", options: ["Areolar", "Dense irregular", "Adipose", "Reticular"], answer: "Dense irregular", explanation: "Dense irregular connective tissue provides strength to the dermis." },
+                { question: "What is the function of hyaluronic acid?", options: ["Support", "Lubrication", "Secretion", "Absorption"], answer: "Lubrication", explanation: "Hyaluronic acid lubricates joints and maintains tissue hydration." },
+                { question: "Which connective tissue is found in the spleen?", options: ["Areolar", "Reticular", "Adipose", "Dense regular"], answer: "Reticular", explanation: "Reticular connective tissue forms the framework of the spleen." },
+                { question: "What is the role of chondrocytes?", options: ["Secretion", "Support", "Protection", "Movement"], answer: "Secretion", explanation: "Chondrocytes produce and maintain cartilage matrix." },
+                { question: "Which connective tissue is found in the bones?", options: ["Cartilage", "Adipose", "Osseous", "Blood"], answer: "Osseous", explanation: "Osseous (bone) tissue supports and protects the body." },
+                { question: "What is the function of osteocytes?", options: ["Secretion", "Support", "Maintenance", "Movement"], answer: "Maintenance", explanation: "Osteocytes maintain bone tissue and regulate calcium." },
+                { question: "Which connective tissue is found in the umbilical cord?", options: ["Areolar", "Mesenchyme", "Adipose", "Dense regular"], answer: "Mesenchyme", explanation: "Mesenchyme is a primitive connective tissue in the umbilical cord." },
+                { question: "What is the role of plasma?", options: ["Support", "Transport", "Secretion", "Protection"], answer: "Transport", explanation: "Plasma transports nutrients, gases, and waste in blood." },
+                { question: "Which connective tissue is found in the heart?", options: ["Areolar", "Dense irregular", "Adipose", "Blood"], answer: "Blood", explanation: "Blood is the connective tissue that circulates through the heart." },
+                { question: "What is the function of pericytes?", options: ["Support", "Secretion", "Protection", "Movement"], answer: "Support", explanation: "Pericytes support blood vessel walls and regulate blood flow." },
+                { question: "Which connective tissue is found in the meninges?", options: ["Areolar", "Dense irregular", "Adipose", "Reticular"], answer: "Dense irregular", explanation: "Dense irregular connective tissue protects the brain and spinal cord." },
+                { question: "What is the role of ground substance?", options: ["Support", "Lubrication", "Secretion", "Absorption"], answer: "Lubrication", explanation: "Ground substance fills spaces and lubricates connective tissue." },
+                { question: "Which connective tissue is found in the adipose tissue?", options: ["Areolar", "Reticular", "Adipose", "Dense regular"], answer: "Adipose", explanation: "Adipose tissue stores fat and provides insulation." },
+                { question: "What is the function of reticular fibers?", options: ["Support", "Flexibility", "Strength", "Protection"], answer: "Support", explanation: "Reticular fibers form a network to support cells in organs." },
+                { question: "Which connective tissue is found in the ligaments?", options: ["Areolar", "Dense regular", "Adipose", "Reticular"], answer: "Dense regular", explanation: "Dense regular connective tissue forms ligaments." }
+            ],
+            "Animal Tissues: Muscular": [
+                { question: "What is the function of muscular tissue?", options: ["Support", "Movement", "Protection", "Transport"], answer: "Movement", explanation: "Muscular tissue contracts to produce movement." },
+                { question: "Which muscle tissue is voluntary?", options: ["Smooth", "Cardiac", "Skeletal", "All of the above"], answer: "Skeletal", explanation: "Skeletal muscle is under conscious control." },
+                { question: "What is the role of actin and myosin?", options: ["Support", "Contraction", "Protection", "Secretion"], answer: "Contraction", explanation: "Actin and myosin filaments slide to produce muscle contraction." },
+                { question: "Which muscle tissue is found in the heart?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Cardiac", explanation: "Cardiac muscle is found only in the heart." },
+                { question: "What is the function of sarcomeres?", options: ["Support", "Contraction", "Protection", "Secretion"], answer: "Contraction", explanation: "Sarcomeres are the basic units of muscle contraction." },
+                { question: "Which muscle tissue is involuntary?", options: ["Smooth", "Cardiac", "Both", "Skeletal"], answer: "Both", explanation: "Smooth and cardiac muscles are involuntary." },
+                { question: "What is the role of the sarcoplasmic reticulum?", options: ["Support", "Calcium storage", "Protection", "Secretion"], answer: "Calcium storage", explanation: "The sarcoplasmic reticulum stores and releases calcium for contraction." },
+                { question: "Which muscle tissue is found in the stomach?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Smooth", explanation: "Smooth muscle lines the stomach and intestines." },
+                { question: "What is the function of intercalated discs?", options: ["Support", "Communication", "Protection", "Secretion"], answer: "Communication", explanation: "Intercalated discs connect cardiac muscle cells and transmit impulses." },
+                { question: "Which muscle tissue is multinucleated?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Skeletal", explanation: "Skeletal muscle fibers are multinucleated." },
+                { question: "What is the role of tropomyosin?", options: ["Support", "Regulation", "Protection", "Secretion"], answer: "Regulation", explanation: "Tropomyosin regulates muscle contraction by blocking actin." },
+                { question: "Which muscle tissue is found in the blood vessels?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Smooth", explanation: "Smooth muscle controls blood vessel diameter." },
+                { question: "What is the function of the neuromuscular junction?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "The neuromuscular junction transmits nerve impulses to muscles." },
+                { question: "Which muscle tissue is striated?", options: ["Smooth", "Cardiac", "Skeletal", "Both B and C"], answer: "Both B and C", explanation: "Cardiac and skeletal muscles are striated." },
+                { question: "What is the role of ATP in muscle contraction?", options: ["Support", "Energy", "Protection", "Secretion"], answer: "Energy", explanation: "ATP provides energy for muscle contraction." },
+                { question: "Which muscle tissue is found in the iris?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Smooth", explanation: "Smooth muscle controls pupil dilation in the iris." },
+                { question: "What is the function of the sarcolemma?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "The sarcolemma transmits action potentials into muscle fibers." },
+                { question: "Which muscle tissue is found in the uterus?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Smooth", explanation: "Smooth muscle in the uterus contracts during childbirth." },
+                { question: "What is the role of creatine phosphate?", options: ["Support", "Energy storage", "Protection", "Secretion"], answer: "Energy storage", explanation: "Creatine phosphate stores energy for muscle contraction." },
+                { question: "Which muscle tissue is found in the biceps?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Skeletal", explanation: "Skeletal muscle forms the biceps." },
+                { question: "What is the function of the motor unit?", options: ["Support", "Contraction", "Protection", "Secretion"], answer: "Contraction", explanation: "A motor unit consists of a motor neuron and the muscle fibers it controls." },
+                { question: "Which muscle tissue is found in the diaphragm?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Skeletal", explanation: "Skeletal muscle forms the diaphragm for breathing." },
+                { question: "What is the role of myoglobin?", options: ["Support", "Oxygen storage", "Protection", "Secretion"], answer: "Oxygen storage", explanation: "Myoglobin stores oxygen in muscle cells." },
+                { question: "Which muscle tissue is found in the bladder?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Smooth", explanation: "Smooth muscle controls bladder emptying." },
+                { question: "What is the function of the T-tubules?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "T-tubules transmit action potentials into muscle fibers." },
+                { question: "Which muscle tissue is found in the tongue?", options: ["Smooth", "Cardiac", "Skeletal", "None"], answer: "Skeletal", explanation: "Skeletal muscle forms the tongue." }
+            ],
+            "Animal Tissues: Nervous": [
+                { question: "What is the function of nervous tissue?", options: ["Support", "Communication", "Protection", "Transport"], answer: "Communication", explanation: "Nervous tissue transmits electrical signals for communication." },
+                { question: "Which cells are the primary functional units of the nervous system?", options: ["Glial cells", "Neurons", "Schwann cells", "Oligodendrocytes"], answer: "Neurons", explanation: "Neurons transmit electrical impulses." },
+                { question: "What is the role of the axon?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "The axon transmits electrical impulses away from the cell body." },
+                { question: "Which cells produce myelin in the CNS?", options: ["Schwann cells", "Oligodendrocytes", "Astrocytes", "Microglia"], answer: "Oligodendrocytes", explanation: "Oligodendrocytes produce myelin in the central nervous system." },
+                { question: "What is the function of the synapse?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "Synapses transmit signals between neurons." },
+                { question: "Which cells provide support in the nervous system?", options: ["Neurons", "Glial cells", "Schwann cells", "Oligodendrocytes"], answer: "Glial cells", explanation: "Glial cells support and protect neurons." },
+                { question: "What is the role of the sodium-potassium pump?", options: ["Support", "Resting potential", "Protection", "Secretion"], answer: "Resting potential", explanation: "The sodium-potassium pump maintains the resting membrane potential." },
+                { question: "Which part of the neuron receives signals?", options: ["Axon", "Dendrite", "Cell body", "Myelin sheath"], answer: "Dendrite", explanation: "Dendrites receive signals from other neurons." },
+                { question: "What is the function of the myelin sheath?", options: ["Support", "Insulation", "Protection", "Secretion"], answer: "Insulation", explanation: "The myelin sheath insulates axons to speed up signal transmission." },
+                { question: "Which cells are involved in the immune response in the CNS?", options: ["Astrocytes", "Microglia", "Oligodendrocytes", "Schwann cells"], answer: "Microglia", explanation: "Microglia act as immune cells in the central nervous system." },
+                { question: "What is the role of neurotransmitters?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "Neurotransmitters transmit signals across synapses." },
+                { question: "Which part of the neuron contains the nucleus?", options: ["Axon", "Dendrite", "Cell body", "Myelin sheath"], answer: "Cell body", explanation: "The cell body (soma) contains the nucleus and organelles." },
+                { question: "What is the function of the nodes of Ranvier?", options: ["Support", "Signal speed", "Protection", "Secretion"], answer: "Signal speed", explanation: "Nodes of Ranvier allow for rapid signal transmission (saltatory conduction)." },
+                { question: "Which cells form the blood-brain barrier?", options: ["Astrocytes", "Microglia", "Oligodendrocytes", "Schwann cells"], answer: "Astrocytes", explanation: "Astrocytes help form the blood-brain barrier." },
+                { question: "What is the role of the resting membrane potential?", options: ["Support", "Signal readiness", "Protection", "Secretion"], answer: "Signal readiness", explanation: "The resting membrane potential prepares the neuron to transmit signals." },
+                { question: "Which part of the neuron transmits signals to other cells?", options: ["Axon", "Dendrite", "Cell body", "Myelin sheath"], answer: "Axon", explanation: "The axon transmits signals to other neurons or muscles." },
+                { question: "What is the function of the synaptic cleft?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "The synaptic cleft is the gap where neurotransmitters are released." },
+                { question: "Which cells are found in the PNS?", options: ["Astrocytes", "Microglia", "Schwann cells", "Oligodendrocytes"], answer: "Schwann cells", explanation: "Schwann cells produce myelin in the peripheral nervous system." },
+                { question: "What is the role of calcium ions in synaptic transmission?", options: ["Support", "Neurotransmitter release", "Protection", "Secretion"], answer: "Neurotransmitter release", explanation: "Calcium ions trigger neurotransmitter release at the synapse." },
+                { question: "Which part of the neuron integrates signals?", options: ["Axon", "Dendrite", "Cell body", "Myelin sheath"], answer: "Cell body", explanation: "The cell body integrates incoming signals." },
+                { question: "What is the function of the action potential?", options: ["Support", "Signal transmission", "Protection", "Secretion"], answer: "Signal transmission", explanation: "The action potential is an electrical impulse that travels along the axon." },
+                { question: "Which cells are involved in phagocytosis in the CNS?", options: ["Astrocytes", "Microglia", "Oligodendrocytes", "Schwann cells"], answer: "Microglia", explanation: "Microglia phagocytose debris and pathogens in the CNS." },
+                { question: "What is the role of the refractory period?", options: ["Support", "Signal regulation", "Protection", "Secretion"], answer: "Signal regulation", explanation: "The refractory period prevents signal overlap and ensures directionality." },
+                { question: "Which part of the neuron is covered by the myelin sheath?", options: ["Axon", "Dendrite", "Cell body", "Synapse"], answer: "Axon", explanation: "The myelin sheath covers the axon to speed up signal transmission." },
+                { question: "What is the function of the postsynaptic membrane?", options: ["Support", "Signal reception", "Protection", "Secretion"], answer: "Signal reception", explanation: "The postsynaptic membrane receives neurotransmitters." },
+                { question: "Which cells provide structural support in the CNS?", options: ["Astrocytes", "Microglia", "Oligodendrocytes", "Schwann cells"], answer: "Astrocytes", explanation: "Astrocytes provide structural and metabolic support to neurons." }
+            ]
+        };
+
+        // DOM Elements
+        const topicButtonsContainer = document.getElementById("topic-buttons");
+        const quizScreen = document.getElementById("quiz-screen");
+        const topicSelector = document.getElementById("topic-selector");
+        const resultsScreen = document.getElementById("results-screen");
+        const topicTitle = document.getElementById("topic-title");
+        const questionNumber = document.getElementById("question-number");
+        const questionText = document.getElementById("question-text");
+        const optionsContainer = document.getElementById("options-container");
+        const explanationSection = document.getElementById("explanation-section");
+        const explanationText = document.getElementById("explanation-text");
+        const nextButton = document.getElementById("next-button");
+        const scoreElement = document.getElementById("score");
+        const finalScoreElement = document.getElementById("final-score");
+        const restartButton = document.getElementById("restart-button");
+        const newTopicButton = document.getElementById("new-topic-button");
+
+        // Game State
+        let currentTopic = "";
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // Initialize Topic Buttons
+        function initTopicButtons() {
+            const topics = Object.keys(quizData);
+            topicButtonsContainer.innerHTML = "";
+            topics.forEach(topic => {
+                const topicCard = document.createElement("div");
+                topicCard.className = "topic-card";
+                topicCard.innerHTML = `
+                    <h3 class="text-xl font-bold text-white">${topic}</h3>
+                    <p class="text-gray-200 mt-1">20 Questions</p>
+                `;
+                topicCard.onclick = () => startQuiz(topic);
+                topicButtonsContainer.appendChild(topicCard);
+            });
+        }
+
+        // Start Quiz
+        function startQuiz(topic) {
+            currentTopic = topic;
+            currentQuestions = [...quizData[topic]];
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreElement.textContent = score;
+            topicTitle.textContent = topic;
+            topicSelector.classList.add("hidden");
+            quizScreen.classList.remove("hidden");
+            resultsScreen.classList.add("hidden");
+            showQuestion();
+        }
+
+        // Show Question
+        function showQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            questionNumber.textContent = `${currentQuestionIndex + 1}.`;
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = "";
+            explanationSection.classList.add("hidden");
+            nextButton.classList.add("hidden");
+
+            // Shuffle options
+            const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+            shuffledOptions.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.className = "option-btn";
+                button.onclick = () => checkAnswer(option, question.answer);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // Check Answer
+        function checkAnswer(selectedOption, correctAnswer) {
+            const buttons = optionsContainer.querySelectorAll(".option-btn");
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correctAnswer) {
+                    button.classList.add("correct");
+                } else if (button.textContent === selectedOption) {
+                    button.classList.add("incorrect");
+                }
+            });
+
+            if (selectedOption === correctAnswer) {
+                score++;
+                scoreElement.textContent = score;
+                scoreElement.classList.add("score-display");
+                setTimeout(() => scoreElement.classList.remove("score-display"), 500);
+            }
+
+            explanationText.textContent = currentQuestions[currentQuestionIndex].explanation;
+            explanationSection.classList.remove("hidden");
+            nextButton.classList.remove("hidden");
+        }
+
+        // Next Question
+        nextButton.onclick = () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        // Show Results
+        function showResults() {
+            quizScreen.classList.add("hidden");
+            resultsScreen.classList.remove("hidden");
+            finalScoreElement.textContent = `${score} / ${currentQuestions.length}`;
+        }
+
+        // Restart Quiz
+        restartButton.onclick = () => startQuiz(currentTopic);
+
+        // New Topic
+        newTopicButton.onclick = () => {
+            resultsScreen.classList.add("hidden");
+            topicSelector.classList.remove("hidden");
+        };
+
+        // Initialize Game
+        window.onload = initTopicButtons;
+    </script>
+</body>
+</html>
