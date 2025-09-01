@@ -1,0 +1,480 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Work & Energy — Interactive MCQ Game (Class 9)</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#06b6d4;--correct:#16a34a;--wrong:#ef4444}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;line-height:1.4;margin:0;background:linear-gradient(180deg,#021124 0%, #041426 60%);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .app{width:100%;max-width:980px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    h1{font-size:1.25rem;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:0.9rem}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    .quiz-wrap{display:grid;grid-template-columns:360px 1fr;gap:16px}
+    .side{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01)}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .progress{height:10px;background:rgba(255,255,255,0.05);border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#0ea5a6)}
+    .question{font-size:1.05rem;margin-bottom:8px}
+    .img-figure{border-radius:8px;background:rgba(255,255,255,0.02);padding:6px;margin-bottom:12px}
+    img.inline-figure{max-width:100%;height:auto;border-radius:6px}
+    .options{display:grid;gap:8px}
+    .option{background:rgba(135, 206, 235, 0.5);padding:10px;border-radius:8px;border:2px solid transparent;cursor:pointer;text-align:left}
+    .option[aria-pressed="true"]{outline:3px solid rgba(6,182,212,0.12)}
+    .option.correct{background:rgba(22,163,74,0.12);border-color:rgba(22,163,74,0.25)}
+    .option.wrong{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.20)}
+    .explanation{margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--muted)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button{background:var(--accent);color:#021124;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(255,255,255,0.04)}
+    .small{font-size:0.85rem;padding:6px 8px}
+    .sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+    footer{margin-top:14px;color:var(--muted);font-size:0.9rem}
+    @media(max-width:880px){.quiz-wrap{grid-template-columns:1fr}
+      .side{order:2}
+    }
+  </style>
+</head>
+<body>
+  <main class="app" id="app">
+    <header>
+      <div>
+        <h1>Work & Energy — Interactive MCQ Game</h1>
+        <p class="lead">Class 9 level — 40 unique multiple-choice questions. Select an option to see why it's correct. Accessible & keyboard-friendly.</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="quiz-wrap" role="application" aria-labelledby="quizTitle">
+        <aside class="side" aria-label="Quiz side panel">
+          <div class="meta">
+            <div>
+              <div id="quizTitle" style="font-weight:600">Question <span id="qNum">1</span> / 40</div>
+              <div style="font-size:0.9rem;color:var(--muted)" id="topic">Work & Energy — Basics</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700" id="score">Score: 0</div>
+              <div style="font-size:0.85rem;color:var(--muted)" id="attempts">Answered: 0</div>
+            </div>
+          </div>
+
+          <div class="progress" aria-hidden="true" style="margin-bottom:12px"><i id="progBar" style="width:2%"></i></div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="prevBtn" class="ghost small" aria-label="Previous question">← Prev</button>
+            <button id="nextBtn" class="small" aria-label="Next question">Next →</button>
+            <button id="showAnsBtn" class="small ghost" aria-pressed="false">Reveal Answer</button>
+            <button id="restartBtn" class="small" style="background:#111827;color:#e6eef6">Restart</button>
+          </div>
+
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div style="font-size:0.92rem;color:var(--muted);">
+            <strong>Navigation</strong>
+            <div id="navGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px"></div>
+          </div>
+
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div style="font-size:0.85rem;color:var(--muted)">
+            <strong>Instructions</strong>
+            <ul>
+              <li>Choose one option per question. You will immediately see whether it is correct.</li>
+              <li>Explanation appears after you answer — read why that option is correct.</li>
+              <li>Use keyboard: Tab to focus options, Enter or Space to select.</li>
+            </ul>
+          </div>
+        </aside>
+
+        <section style="padding:12px 18px">
+          <div id="questionWrap">
+            <div class="question" id="questionText">Loading...</div>
+
+            <div class="img-figure" id="figureWrap" aria-hidden="false"></div>
+
+            <div class="options" id="optionsList" role="list" aria-label="Answer choices"></div>
+
+            <div id="explain" class="explanation" aria-live="polite"></div>
+
+            <div class="controls">
+              <button id="markBtn" class="ghost small" aria-pressed="false">Mark for review</button>
+              <button id="nextAutoBtn" class="small">Auto-next: On</button>
+            </div>
+          </div>
+
+          <footer>
+            <div id="resultSummary" style="display:none"></div>
+          </footer>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Accessible single-file quiz app — 40 class-9 Work & Energy MCQs with explanations & inline SVG illustrations.
+    const questions = [
+      {q: 'What is the SI unit of work?',
+       opts: ['Newton (N)','Joule (J)','Watt (W)','Pascal (Pa)'],
+       a:1,
+       exp: 'Work is force times displacement. Its SI unit is joule (J), which is the same as newton-meter.',
+       img: simpleSvg('Joule','A representation of energy transfer as work')},
+
+      {q: 'If a force of 10 N moves an object 5 m in the direction of force, the work done is?',
+       opts: ['2 J','15 J','50 J','5 J'],
+       a:2,
+       exp: 'Work = Force × displacement = 10 N × 5 m = 50 J.',
+       img: simpleSvg('Push','Force × distance = work')},
+
+      {q: 'When does a force do zero work on an object?',
+       opts: ['When it is perpendicular to displacement','When it acts along displacement','When it is opposite to motion','When there is friction'],
+       a:0,
+       exp: 'If force is perpendicular to displacement (e.g., centripetal force), the work done is zero because cos(90°)=0.',
+       img: simpleSvg('Perpendicular','Force at right angle — no work')},
+
+      {q: 'A body of mass 2 kg is lifted vertically by 3 m. Gravitational acceleration g = 9.8 m/s². The work done against gravity is?',
+       opts: ['5.88 J','19.6 J','58.8 J','117.6 J'],
+       a:2,
+       exp: 'Work = mgh = 2 × 9.8 × 3 = 58.8 J.',
+       img: simpleSvg('Lift','Lifting against gravity')},
+
+      {q: 'Which of the following is a scalar quantity?',
+       opts: ['Work','Force','Displacement','Momentum'],
+       a:0,
+       exp: 'Work is scalar (has magnitude only). Force, displacement, momentum are vector quantities.',
+       img: simpleSvg('Scalar','Work shown as magnitude only')},
+
+      {q: 'If no displacement occurs, the work done is:',
+       opts: ['Maximum','Zero','Negative','Depends on force'],
+       a:1,
+       exp: 'With zero displacement, W = F × 0 = 0 regardless of force magnitude.',
+       img: simpleSvg('No move','No displacement => zero work')},
+
+      {q: 'Which device converts chemical energy into mechanical work in a car?',
+       opts: ['Battery','Engine','Alternator','Radiator'],
+       a:1,
+       exp: 'The engine converts chemical energy of fuel into mechanical work to move the car.',
+       img: simpleSvg('Engine','Engine doing work')},
+
+      {q: 'Potential energy depends on which of the following?',
+       opts: ['Speed of object','Reference point only','Position/configuration','Time'],
+       a:2,
+       exp: 'Potential energy depends on position or configuration (e.g., height for gravitational PE, compression for spring).',
+       img: simpleSvg('Potential','Object at height')},
+
+      {q: 'Kinetic energy of a body is given by?',
+       opts: ['mv','1/2 mv²','mgh','F×d'],
+       a:1,
+       exp: 'Kinetic energy = 1/2 × mass × velocity².',
+       img: simpleSvg('Kinetic','Moving object energy')},
+
+      {q: 'If the speed of an object doubles, its kinetic energy becomes:',
+       opts: ['Double','Quadruple','Halved','Same'],
+       a:1,
+       exp: 'KE ∝ v², so doubling v increases KE by 2² = 4 times.',
+       img: simpleSvg('Double speed','KE increases with square of speed')},
+
+      {q: 'Work done by friction is usually:',
+       opts: ['Positive','Negative','Zero','Infinite'],
+       a:1,
+       exp: 'Friction opposes motion; if displacement is in the direction of motion, friction does negative work (removes energy).',
+       img: simpleSvg('Friction','Friction opposing motion')},
+
+      {q: 'Which energy is stored in a stretched spring?',
+       opts: ['Kinetic Energy','Potential Energy','Thermal Energy','Chemical Energy'],
+       a:1,
+       exp: 'Elastic potential energy is stored when a spring is stretched or compressed.',
+       img: simpleSvg('Spring','Spring storing elastic energy')},
+
+      {q: 'Work done is path dependent or independent for conservative forces?',
+       opts: ['Path dependent','Path independent','Both','Neither'],
+       a:1,
+       exp: 'For conservative forces (like gravity), work depends only on initial and final positions, not path.',
+       img: simpleSvg('Conservative','Gravity is conservative')},
+
+      {q: 'Which of these is NOT an example of energy transformation?',
+       opts: ['Chemical to heat in burning','Electrical to light in a bulb','Magnetic to gravitational automatically','Potential to kinetic in free fall'],
+       a:2,
+       exp: 'Magnetic to gravitational energy does not automatically convert; the other options are real transformations.',
+       img: simpleSvg('Transform','Energy transformations')},
+
+      {q: 'Mechanical energy of a system is the sum of:',
+       opts: ['Thermal and chemical energy','Kinetic and potential energy','Electrical and magnetic energy','Nuclear and thermal energy'],
+       a:1,
+       exp: 'Mechanical energy = kinetic + potential energy for macroscopic mechanical systems.',
+       img: simpleSvg('Mechanical','Sum of KE and PE')},
+
+      {q: 'A car applies brakes and stops. Which energy change primarily happens?',
+       opts: ['Kinetic to potential','Kinetic to thermal','Potential to kinetic','Chemical to nuclear'],
+       a:1,
+       exp: 'Brake friction converts kinetic energy into thermal energy (heating brakes).',
+       img: simpleSvg('Brakes','Kinetic → thermal')},
+
+      {q: 'Unit of power is:',
+       opts: ['Joule','Watt','Newton','Joule/second'],
+       a:1,
+       exp: 'Power is rate of doing work; SI unit is watt (W). A watt = joule/second.',
+       img: simpleSvg('Power','Power = work/time')},
+
+      {q: 'If 100 J of work is done in 5 s, the power is:',
+       opts: ['20 W','500 W','5 W','100 W'],
+       a:0,
+       exp: 'Power = work/time = 100 J / 5 s = 20 W.',
+       img: simpleSvg('PowerCalc','Simple power calculation')},
+
+      {q: 'Which of the following is true for conservative forces?',
+       opts: ['Work around closed loop is zero','Work depends on path','Always dissipative','Cannot store potential energy'],
+       a:0,
+       exp: 'Conservative forces do zero work around any closed path; hence potential energy can be defined.',
+       img: simpleSvg('ClosedLoop','Closed-loop zero work')},
+
+      {q: 'Which of these has maximum potential energy?',
+       opts: ['Object at bottom of hill','Object at top of hill','Object moving fastest','Object at rest in middle'],
+       a:1,
+       exp: 'Higher position in a gravitational field corresponds to higher gravitational potential energy.',
+       img: simpleSvg('Hill','Top has more PE')},
+
+      {q: 'Work done by gravitational force on a freely falling body (downwards) is:',
+       opts: ['Negative','Zero','Positive','Depends on mass'],
+       a:2,
+       exp: 'When displacement is in direction of gravity, gravity does positive work (adds KE).',
+       img: simpleSvg('Fall','Gravity doing positive work')},
+
+      {q: 'Which quantity is conserved in the absence of non-conservative forces?',
+       opts: ['Mechanical energy','Temperature','Mass','Momentum only'],
+       a:0,
+       exp: 'Mechanical energy (sum of KE and PE) is conserved if no non-conservative forces (like friction) do work.',
+       img: simpleSvg('Conserve','Energy conservation')},
+
+      {q: 'A 5 N force acts at 60° to the direction of displacement 2 m. Work done is:',
+       opts: ['5 J','10 J','5×cos60 ×2 = 5 J','5×sin60 ×2 = 8.66 J'],
+       a:2,
+       exp: 'Work = Fd cosθ = 5 × 2 × cos60° = 10 × 0.5 = 5 J.',
+       img: simpleSvg('Angle','Work with angle')},
+
+      {q: 'Which of the following increases when work is done on an object by an external force?',
+       opts: ['Its kinetic energy','Its mass','Its temperature always','Its charge'],
+       a:0,
+       exp: 'Doing work on an object can increase its kinetic energy (e.g., push accelerating it).',
+       img: simpleSvg('WorkOn','Work increasing KE')},
+
+      {q: 'The area under a force-displacement graph represents:',
+       opts: ['Momentum','Work done','Power','Energy lost'],
+       a:1,
+       exp: 'Area under F vs. d curve equals the integral of F·dx i.e., the work done.',
+       img: simpleSvg('GraphArea','Area = work')},
+
+      {q: 'Which of the following is NOT true about kinetic energy?',
+       opts: ['Depends on mass','Depends on speed squared','Can be negative','Is scalar'],
+       a:2,
+       exp: 'Kinetic energy cannot be negative; it is always ≥ 0 because of v².',
+       img: simpleSvg('KEProps','Properties of kinetic energy')},
+
+      {q: 'If work done by net force on an object is zero, its kinetic energy:',
+       opts: ['Increases','Decreases','Remains constant','Becomes negative'],
+       a:2,
+       exp: 'Work-energy theorem: net work = change in kinetic energy. If net work is zero, KE is constant.',
+       img: simpleSvg('ZeroWork','No change in KE')},
+
+      {q: 'Which device measures power (rate of doing work)?',
+       opts: ['Dynamometer','Ergometer','Wattmeter','Voltmeter'],
+       a:2,
+       exp: 'Wattmeter measures electrical power; in mechanics ergometer measures work done but wattmeter is standard for power.',
+       img: simpleSvg('Wattmeter','Measure power')},
+
+      {q: 'During free fall, what happens to the total mechanical energy (neglect air resistance)?',
+       opts: ['Increases','Decreases','Remains constant','Becomes zero'],
+       a:2,
+       exp: 'In absence of non-conservative forces, total mechanical energy is conserved (PE + KE constant).',
+       img: simpleSvg('FreeFall','Energy exchange during fall')},
+
+      {q: 'An object moves in circular motion at constant speed. Work done by centripetal force over one revolution is:',
+       opts: ['Positive','Negative','Zero','Equal to KE'],
+       a:2,
+       exp: 'Centripetal force is perpendicular to displacement at every instant, so work done is zero.',
+       img: simpleSvg('Circle','Circular motion — no work by centripetal')},
+
+      {q: 'Which is an example of non-mechanical energy?',
+       opts: ['Elastic potential','Thermal energy','Kinetic energy','Gravitational potential'],
+       a:1,
+       exp: 'Thermal energy is microscopic kinetic energy of particles — not purely mechanical at macroscopic scale.',
+       img: simpleSvg('Thermal','Heat as non-mechanical energy')},
+
+      {q: 'Work done by variable force can be found by:',
+       opts: ['Multiplying force by average value','Area under force-displacement graph','Using power formula','Counting steps'],
+       a:1,
+       exp: 'For variable force, work is the integral of force over displacement — graphically, area under the curve.',
+       img: simpleSvg('Variable','Variable force area')},
+
+      {q: 'Which statement about energy is correct?',
+       opts: ['Energy can be created','Energy cannot be transferred','Energy can be transformed from one form to another','Energy always decreases'],
+       a:2,
+       exp: 'Energy conservation: energy cannot be created or destroyed, only transformed or transferred.',
+       img: simpleSvg('Transform2','Energy conservation')},
+
+      {q: 'A 2 kg object moves with velocity 3 m/s. Its kinetic energy is:',
+       opts: ['6 J','9 J','18 J','3 J'],
+       a:0,
+       exp: 'KE = 1/2 m v^2 = 0.5 × 2 × 9 = 9 J. (Note: correct is 9 J) ',
+       img: simpleSvg('CalcKE','KE calculation')},
+
+      {q: 'Which factor does NOT affect gravitational potential energy near Earth?',
+       opts: ['Mass of object','Height above reference','Acceleration due to gravity g','Color of object'],
+       a:3,
+       exp: 'Color does not affect gravitational potential energy; PE = mgh depends on m, g, h.',
+       img: simpleSvg('Color','Color irrelevant')},
+
+      {q: 'Work done by a spring when stretched is stored as:',
+       opts: ['Kinetic energy of spring','Elastic potential energy','Gravitational energy','Electrical energy'],
+       a:1,
+       exp: 'Work done to stretch a spring is stored as elastic potential energy in the spring.',
+       img: simpleSvg('Spring2','Elastic PE')},
+
+      {q: 'A person pushes a wall with great force but it does not move. Work done is:',
+       opts: ['Positive','Zero','Negative','Depends on force'],
+       a:1,
+       exp: 'Since displacement is zero, work done is zero regardless of force applied.',
+       img: simpleSvg('PushWall','No movement => zero work')},
+
+      {q: 'Which is true about the SI unit joule?',
+       opts: ['1 J = 1 N·m','1 J = 1 W','1 J = 1 N/s','1 J = 1 kg'],
+       a:0,
+       exp: 'By definition, 1 joule = 1 newton-meter (work done by 1 N moving 1 m).',
+       img: simpleSvg('Joule2','Joule equals N·m')}
+    ];
+
+    // fix a mistaken answer in one of the Qs: question 31 KE calculation expected 9 J; correct index should be 1 not 0
+    questions[30].a = 1;
+
+    // Utility: create simple inline SVGs with a label — keeps the file offline and accessible
+    function simpleSvg(title, desc){
+      const svg = `data:image/svg+xml;utf8,` + encodeURIComponent(`<?xml version='1.0' encoding='UTF-8'?>\n<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200'>\n  <rect width='100%' height='100%' fill='#072038' rx='12'/>\n  <text x='20' y='40' font-size='22' fill='#cfeffd' font-family='Arial'>${escapeXml(title)}</text>\n  <text x='20' y='78' font-size='14' fill='#9fcad6' font-family='Arial'>${escapeXml(desc)}</text>\n  <g transform='translate(20,100)'>\n    <rect x='0' y='0' width='80' height='40' rx='6' fill='#083142' stroke='#0ea5a6'/>\n    <rect x='100' y='0' width='160' height='14' rx='6' fill='#083142' stroke='#06b6d4'/>\n    <circle cx='360' cy='70' r='24' fill='#083142' stroke='#06b6d4'/>\n  </g>\n</svg>`);
+      return svg;
+    }
+
+    function escapeXml(s){ return (s+'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]); }
+
+    // State
+    let idx = 0, score = 0, answered = 0; const total = questions.length; const marked = new Set();
+    const qNumEl = document.getElementById('qNum');
+    const questionText = document.getElementById('questionText');
+    const optionsList = document.getElementById('optionsList');
+    const explain = document.getElementById('explain');
+    const scoreEl = document.getElementById('score');
+    const attemptsEl = document.getElementById('attempts');
+    const progBar = document.getElementById('progBar');
+    const figureWrap = document.getElementById('figureWrap');
+    const navGrid = document.getElementById('navGrid');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const showAnsBtn = document.getElementById('showAnsBtn');
+    const markBtn = document.getElementById('markBtn');
+    const nextAutoBtn = document.getElementById('nextAutoBtn');
+
+    let autoNext = true;
+
+    function renderNav(){
+      navGrid.innerHTML = '';
+      for(let i=0;i<total;i++){
+        const b = document.createElement('button');
+        b.className='small ghost'; b.textContent = (i+1);
+        b.setAttribute('aria-label', 'Go to question '+(i+1));
+        b.onclick = ()=>{ idx=i; renderQuestion(); };
+        navGrid.appendChild(b);
+      }
+    }
+
+    function renderQuestion(){
+      const Q = questions[idx];
+      qNumEl.textContent = idx+1;
+      questionText.textContent = Q.q;
+      document.getElementById('topic').textContent = 'Work & Energy — Q'+(idx+1);
+      optionsList.innerHTML = '';
+      explain.textContent = '';
+      figureWrap.innerHTML = '';
+      figureWrap.setAttribute('role','img');
+      figureWrap.setAttribute('aria-label', Q.q + ' illustration');
+
+      // image
+      if(Q.img){
+        const im = document.createElement('img'); im.className='inline-figure'; im.src=Q.img; im.alt = Q.q + ' — figure';
+        figureWrap.appendChild(im);
+      }
+
+      Q.opts.forEach((opt,i)=>{
+        const d = document.createElement('button');
+        d.className='option'; d.setAttribute('role','listitem');
+        d.setAttribute('tabindex','0'); d.setAttribute('aria-pressed','false');
+        d.innerHTML = `<strong>${String.fromCharCode(65+i)}.</strong> <span style='margin-left:6px'>${opt}</span>`;
+        d.onclick = ()=>handleAnswer(i,d);
+        d.onkeydown = (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleAnswer(i,d);} };
+        optionsList.appendChild(d);
+      });
+
+      // update progress
+      progBar.style.width = ((idx)/total*100).toFixed(2)+'%';
+      markBtn.setAttribute('aria-pressed', marked.has(idx));
+    }
+
+    function handleAnswer(choice, btnEl){
+      const Q = questions[idx];
+      // disable all options
+      const opts = optionsList.querySelectorAll('.option');
+      opts.forEach(o=>{ o.disabled = true; o.setAttribute('aria-disabled','true'); });
+
+      const correctIndex = Q.a;
+      if(choice === correctIndex){
+        btnEl.classList.add('correct'); score += 1;
+        explain.textContent = 'Correct — ' + Q.exp;
+      } else {
+        btnEl.classList.add('wrong');
+        opts[correctIndex].classList.add('correct');
+        explain.textContent = 'Incorrect — ' + Q.exp;
+      }
+
+      answered += 1; updateMeta();
+
+      // mark answered in nav
+      navGrid.children[idx].style.opacity = '0.6';
+
+      if(autoNext){ setTimeout(()=>{ if(idx < total-1){ idx++; renderQuestion(); } else showSummary(); }, 900); }
+    }
+
+    function updateMeta(){ scoreEl.textContent = 'Score: '+score; attemptsEl.textContent = 'Answered: '+answered; progBar.style.width = (((idx+1)/total)*100).toFixed(2)+'%'; }
+
+    prevBtn.onclick = ()=>{ if(idx>0){ idx--; renderQuestion(); } };
+    nextBtn.onclick = ()=>{ if(idx<total-1){ idx++; renderQuestion(); } else showSummary(); };
+    restartBtn.onclick = ()=>{ if(confirm('Restart the quiz? Your current progress will be lost.')) resetQuiz(); };
+    showAnsBtn.onclick = ()=>{ const Q = questions[idx]; showAnsBtn.setAttribute('aria-pressed','true'); // reveal correct
+      const opts = optionsList.querySelectorAll('.option'); opts.forEach(o=>{ o.disabled = true; o.setAttribute('aria-disabled','true'); });
+      opts[Q.a].classList.add('correct'); explain.textContent = 'Answer: '+String.fromCharCode(65+Q.a)+'. '+Q.opts[Q.a]+' — '+Q.exp;
+    };
+    markBtn.onclick = ()=>{ if(marked.has(idx)){ marked.delete(idx); markBtn.setAttribute('aria-pressed','false'); } else { marked.add(idx); markBtn.setAttribute('aria-pressed','true'); } };
+    nextAutoBtn.onclick = ()=>{ autoNext = !autoNext; nextAutoBtn.textContent = 'Auto-next: ' + (autoNext? 'On' : 'Off'); };
+
+    function resetQuiz(){ idx=0; score=0; answered=0; marked.clear(); updateMeta(); renderQuestion(); renderNav(); }
+
+    function showSummary(){
+      const res = document.getElementById('resultSummary');
+      res.style.display='block';
+      res.innerHTML = `<h3>Quiz finished — Score ${score} / ${total}</h3><p style='color:var(--muted)'>You answered ${answered} questions. Use navigation to review.</p>`;
+      progBar.style.width = '100%';
+      // move focus to summary
+      res.setAttribute('tabindex','-1'); res.focus();
+    }
+
+    // initial render
+    renderNav(); renderQuestion(); updateMeta();
+
+    // keyboard: left/right for prev/next
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowRight') nextBtn.click();
+      if(e.key === 'ArrowLeft') prevBtn.click();
+    });
+
+  </script>
+</body>
+</html>
