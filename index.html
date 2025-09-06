@@ -13,17 +13,17 @@
       color: #e0f7fa;
     }
     header {
-      background: linear-gradient(135deg, #00e5ff 0%, #000 50%, #00e5ff 100%);
+      background: linear-gradient(135deg, #000 0%, #00e5ff 50%, #000 100%);
       color: white;
       text-align: center;
-      padding: 25px;
+      padding: 20px;
       box-shadow: 0 4px 18px rgba(0, 229, 255, 0.5);
     }
     header h1 {
       margin: 0;
       font-size: 2rem;
       font-weight: bold;
-      text-shadow: 0 0 15px #00e5ff;
+      text-shadow: 0 0 12px #00e5ff;
     }
     header p {
       margin: 6px 0 0;
@@ -32,77 +32,60 @@
     }
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
       padding: 30px;
+      max-width: 1100px;
+      margin: auto;
     }
     .card {
-      background: linear-gradient(135deg, #00e5ff 0%, #000 50%, #00e5ff 100%);
-      border-radius: 18px;
-      padding: 25px 20px;
+      background: linear-gradient(135deg, #000 0%, #00e5ff 50%, #000 100%);
+      border-radius: 14px;
+      padding: 18px 15px;
       text-align: center;
       color: #e0f7fa;
-      box-shadow: 0 6px 20px rgba(0,229,255,0.6);
+      box-shadow: 0 4px 14px rgba(0,229,255,0.5);
       transition: transform 0.3s, box-shadow 0.3s;
       cursor: pointer;
       position: relative;
       overflow: hidden;
     }
-    .card::before {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(0,229,255,0.4) 0%, transparent 70%);
-      transform: rotate(25deg);
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
-    .card:hover::before {
-      opacity: 1;
-    }
     .card:hover {
-      transform: translateY(-10px) scale(1.04);
-      box-shadow: 0 10px 30px rgba(0,229,255,0.9);
-    }
-    .icon {
-      font-size: 2.7rem;
-      margin-bottom: 14px;
-      text-shadow: 0 0 12px rgba(0,229,255,0.9);
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 8px 22px rgba(0,229,255,0.8);
     }
     .card h2 {
-      margin: 10px 0;
-      font-size: 1.3rem;
+      margin: 8px 0;
+      font-size: 1.1rem;
       color: #e0f7fa;
       text-shadow: 0 0 6px rgba(0,229,255,0.7);
     }
     .card a {
       display: inline-block;
-      margin-top: 15px;
-      padding: 10px 22px;
+      margin-top: 10px;
+      padding: 8px 16px;
       text-decoration: none;
       background: #00e5ff;
       color: #000;
       font-weight: bold;
-      border-radius: 8px;
+      border-radius: 6px;
+      font-size: 0.9rem;
       transition: background 0.3s, transform 0.2s;
-      box-shadow: 0 0 12px rgba(0,229,255,0.6);
+      box-shadow: 0 0 10px rgba(0,229,255,0.6);
     }
     .card a:hover {
       background: #00bcd4;
-      transform: scale(1.08);
-      box-shadow: 0 0 18px rgba(0,229,255,0.9);
+      transform: scale(1.07);
+      box-shadow: 0 0 15px rgba(0,229,255,0.9);
     }
     footer {
-      background: linear-gradient(90deg, #00e5ff 0%, #000 50%, #00e5ff 100%);
+      background: linear-gradient(90deg, #000 0%, #00e5ff 50%, #000 100%);
       color: #00e5ff;
       text-align: center;
-      padding: 12px;
-      margin-top: 35px;
-      font-size: 0.9rem;
-      box-shadow: 0 -2px 14px rgba(0,229,255,0.5);
+      padding: 10px;
+      margin-top: 25px;
+      font-size: 0.85rem;
+      box-shadow: 0 -2px 12px rgba(0,229,255,0.5);
     }
   </style>
 </head>
@@ -115,37 +98,30 @@
 
   <div class="container">
     <div class="card">
-      <div class="icon">⚡</div>
       <h2>कार्य और ऊर्जा (Work and Energy)</h2>
       <a href="Work%20and%20energy.html">Start</a>
     </div>
     <div class="card">
-      <div class="icon">🌱</div>
       <h2>KBC स्टाइल (Tissue Quiz)</h2>
       <a href="KBC%20Style%20Tissue.html">Start</a>
     </div>
     <div class="card">
-      <div class="icon">🌱</div>
       <h2>सिंपल UI (Tissue)</h2>
       <a href="Single%20UI%20Tissue.html">Start</a>
     </div>
     <div class="card">
-      <div class="icon">🌱</div>
       <h2>टिश्यू (TISSUES)</h2>
       <a href="TISSUES.html">Start</a>
     </div>
     <div class="card">
-      <div class="icon">🎮</div>
       <h2>एडुगेम्स</h2>
       <a href="edugames.html">Start</a>
     </div>
     <div class="card">
-      <div class="icon">⚡</div>
       <h2>गति के नियम (Laws of Motion)</h2>
       <a href="laws%20of%20motion.html">Start</a>
     </div>
     <div class="card">
-      <div class="icon">⚗️</div>
       <h2>पदार्थ हमारे चारों ओर (Matters Around Us)</h2>
       <a href="EDUGAMES%20Is%20matters%20around%20us%20pure.html">Start</a>
     </div>
