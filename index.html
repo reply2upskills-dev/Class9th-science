@@ -1,22 +1,117 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-    <title>मुख्य मेनू (Main Menu)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class 9th Science – Main Menu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f4f9;
+      color: #222;
+    }
+    header {
+      background: #1a237e;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    header p {
+      margin: 5px 0 0;
+      font-size: 1rem;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    .card h2 {
+      margin: 10px 0;
+      font-size: 1.3rem;
+      color: #1a237e;
+    }
+    .card a {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 15px;
+      text-decoration: none;
+      background: #1a237e;
+      color: white;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .card a:hover {
+      background: #3949ab;
+    }
+    footer {
+      background: #1a237e;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>गेम और टॉपिक चुनें (Select any Topic)</h1>
+  <header>
+    <h1>गेम और टॉपिक चुनें (Select Any Topic)</h1>
+    <p>नीचे दिए गए विकल्पों में से कोई भी चुनें:</p>
+  </header>
 
-    <p>कृपया नीचे दिए गए लिंक पर क्लिक करके आगे बढ़ें: (Please select any one link for Go Ahead)</p>
+  <div class="container">
+    <div class="card">
+      <h2>कार्य और ऊर्जा (Work and Energy)</h2>
+      <a href="Work%20and%20energy.html">Start</a>
+    </div>
+    <div class="card">
+      <h2>KBC स्टाइल (Tissue Quiz)</h2>
+      <a href="KBC%20Style%20Tissue.html">Start</a>
+    </div>
+    <div class="card">
+      <h2>सिंपल UI (Tissue)</h2>
+      <a href="Single%20UI%20Tissue.html">Start</a>
+    </div>
+    <div class="card">
+      <h2>टिश्यू (TISSUES)</h2>
+      <a href="TISSUES.html">Start</a>
+    </div>
+    <div class="card">
+      <h2>एडुगेम्स</h2>
+      <a href="edugames.html">Start</a>
+    </div>
+    <div class="card">
+      <h2>गति के नियम (Laws of Motion)</h2>
+      <a href="laws%20of%20motion.html">Start</a>
+    </div>
+    <div class="card">
+      <h2>पदार्थ हमारे चारों ओर (Matters Around Us)</h2>
+      <a href="EDUGAMES%20Is%20matters%20around%20us%20pure.html">Start</a>
+    </div>
+  </div>
 
-    <a href="Work%20and%20energy.html">कार्य और ऊर्जा (Work and Energy)</a><br>
-    <a href="KBC%20Style%20Tissue.html">KBC स्टाइल टिशू</a><br>
-    <a href="Single%20UI%20Tissue.html">सिंगल UI टिशू</a><br>
-    <a href="TISSUES.html">टिशू (TISSUES)</a><br>
-    <a href="edugames.html">एजुगेम्स</a><br>
-    <a href="laws%20of%20motion.html">गति के नियम (Laws of Motion)</a><br>
-    <a href="EDUGAMES%20Is%20matters%20around%20us%20pure.html">Matters around us</a><br>
-    
+  <footer>
+    © 2025 Class 9th Science Games | Developed with ❤️ for Students
+  </footer>
 
 </body>
 </html>
